@@ -1,6 +1,6 @@
-﻿using Domain.Entities;
+﻿using Application.Interfaces;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace AlertaDengueAPI.Controllers
 {
@@ -9,10 +9,15 @@ namespace AlertaDengueAPI.Controllers
     public class AlertaDengueController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-
-        public AlertaDengueController(HttpClient httpClient)
+        private readonly ISolicitanteService _solicitanteService;
+        private readonly IRelatorioService _relatorioService;
+        public AlertaDengueController(HttpClient httpClient, 
+                                      ISolicitanteService solicitanteService,
+                                      IRelatorioService relatorioService)
         {
             _httpClient = httpClient;
+            _solicitanteService = solicitanteService;
+            _relatorioService = relatorioService;
         }
 
         [HttpGet("consultar-alerta")]
@@ -44,28 +49,40 @@ namespace AlertaDengueAPI.Controllers
                 {
                     var content = await response.Content.ReadAsStringAsync();
 
-                    var relatorio = new Relatorio
+                    // Verifica se o solicitante é válido antes de prosseguir
+                    var solicitante = await _solicitanteService.GetSolicitanteAsync(solicitanteId);
+                    if (solicitante?.Id > 0)
                     {
-                        DataSolicitacao = DateTime.Now,
-                        Arbovirose = disease,
-                        SemanaInicio = ew_start,
-                        SemanaTermino = ew_end,
-                        CodigoIBGE = geocode.ToString(),
-                        SolicitanteId = solicitanteId
-                    };
+                        var relatorio = new Relatorio
+                        {
+                            DataSolicitacao = DateTime.Now,
+                            Arbovirose = disease,
+                            SemanaInicio = ew_start,
+                            SemanaTermino = ew_end,
+                            CodigoIBGE = geocode.ToString(),
+                            SolicitanteId = solicitanteId
+                        };
 
+                        // Chama o serviço para inserir o relatório
+                        var resultadoRelatorio = await _relatorioService.InsertRelatorioAsync(relatorio);
 
-                    if (format.ToLower() == "json")
-                    {
-                        return Ok(content); // Retorna os dados em formato JSON
-                    }
-                    else if (format.ToLower() == "csv")
-                    {
-                         return File(System.Text.Encoding.UTF8.GetBytes(content), "text/csv", "alerta_dengue.csv");
+                        // Retorna a resposta conforme o formato solicitado
+                        if (format.ToLower() == "json")
+                        {
+                            return Ok(content); // Retorna os dados em formato JSON
+                        }
+                        else if (format.ToLower() == "csv")
+                        {
+                            return File(System.Text.Encoding.UTF8.GetBytes(content), "text/csv", "alerta_dengue.csv");
+                        }
+                        else
+                        {
+                            return BadRequest("Formato inválido. Aceitamos apenas 'json' ou 'csv'.");
+                        }
                     }
                     else
                     {
-                        return BadRequest("Formato inválido. Aceitamos apenas 'json' ou 'csv'.");
+                        return BadRequest("Solicitante não encontrado ou ID inválido.");
                     }
                 }
                 else
@@ -78,8 +95,5 @@ namespace AlertaDengueAPI.Controllers
                 return StatusCode(500, $"Erro interno: {ex.Message}");
             }
         }
-
-      
-       
     }
 }

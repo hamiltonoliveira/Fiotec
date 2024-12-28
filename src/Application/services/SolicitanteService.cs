@@ -1,18 +1,42 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
+using Infrastructure.Interfaces;
 
 namespace Application.services
 {
-    public class SolicitanteService : ISolicitante
+    public class SolicitanteService : ISolicitanteService
     {
-        public Task<Solicitante> GetSolicitanteAsync(string cpf, string nome)
+        private readonly ISolicitante _solicitanteRepository;
+
+        public SolicitanteService(ISolicitante solicitanteRepository)
         {
-            throw new NotImplementedException();
+            _solicitanteRepository = solicitanteRepository;
         }
 
-        public Task<Solicitante> InsertAsync(Solicitante entity)
+        public async Task<Solicitante> GetSolicitanteAsync(int Id)
         {
-            throw new NotImplementedException();
+            var solicitante = await _solicitanteRepository.GetSolicitanteAsync(Id);
+
+            if (solicitante == null)
+            {
+                throw new KeyNotFoundException("Solicitante não encontrado.");
+            }
+            return solicitante;
+        }
+
+        public async Task<Solicitante> InsertAsync(Solicitante entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity), "O objeto solicitante não pode ser nulo.");
+            }
+
+            if (string.IsNullOrEmpty(entity.CPF) || string.IsNullOrEmpty(entity.Nome))
+            {
+                throw new ArgumentException("CPF e Nome são obrigatórios.");
+            }
+
+            return await _solicitanteRepository.InsertAsync(entity);
         }
     }
-}
+} 

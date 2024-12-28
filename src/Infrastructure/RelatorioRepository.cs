@@ -1,13 +1,22 @@
 ﻿using Domain.Entities;
+using Infrastructure.data;
 using Infrastructure.Interfaces;
 
 namespace Infrastructure
 {
-    public class RelatorioRepository : IRelatorio
+    public class RelatorioRepository : IRelatorioRepository
     {
-        public Task<Relatorio> InsertRelatorioAsync(Relatorio relatorio)
+        private readonly DataContext _context;
+
+        public RelatorioRepository(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<Relatorio> InsertRelatorioAsync(Relatorio relatorio)
+        {
+            await _context.Relatorio.AddAsync(relatorio);
+            await _context.SaveChangesAsync();
+            return relatorio;
         }
     }
 }

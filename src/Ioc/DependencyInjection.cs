@@ -11,15 +11,15 @@ namespace Ioc
     {
         public static IServiceCollection AddInfraStructure(this IServiceCollection service, IConfiguration Configuration)
         {
-            service.AddScoped<Infrastructure.Interfaces.ISolicitante, SolicitanteRepository>();
-            service.AddScoped<Infrastructure.Interfaces.IRelatorio, RelatorioRepository>();
+            service.AddScoped<IRelatorioRepository, RelatorioRepository>();
+            service.AddScoped<ISolicitante, SolicitanteRepository>();
             return service;
         }
 
         public static IServiceCollection AddServices(this IServiceCollection service, IConfiguration Configuration)
         {
-            service.AddScoped<Application.Interfaces.ISolicitante, SolicitanteService>();
-            service.AddScoped<Application.Interfaces.IRelatorioService, RelatorioService>();
+            service.AddScoped<IRelatorioService, RelatorioService>();
+            service.AddScoped<ISolicitanteService, SolicitanteService>();
             return service;
         }
     }

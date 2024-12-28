@@ -8,14 +8,10 @@ namespace Infrastructure.Map
     {
         public void Configure(EntityTypeBuilder<Solicitante> builder)
         {
-            builder.ToTable("Solicitantes");
+            builder.ToTable("Solicitante");
            
             builder.HasKey(s => s.Id);
-             
-            builder.Property(s => s.Id)
-                .ValueGeneratedOnAdd()
-                .IsRequired();
-
+     
             builder.Property(s => s.Nome)
                 .HasMaxLength(150)
                 .IsRequired();

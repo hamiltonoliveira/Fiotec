@@ -10,7 +10,7 @@ namespace Infrastructure.Interfaces
 {
     public interface ISolicitante 
     {
-        Task<Solicitante> GetSolicitanteAsync(string cpf, string nome);
+        Task<Solicitante> GetSolicitanteAsync(int Id);
         Task<Solicitante> InsertAsync(Solicitante solicitante);
     }
 }

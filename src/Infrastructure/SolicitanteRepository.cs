@@ -1,18 +1,36 @@
 ﻿using Domain.Entities;
+using Infrastructure.data;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure
 {
     public class SolicitanteRepository : ISolicitante 
     {
-        public Task<Solicitante> GetSolicitanteAsync(string cpf, string nome)
+        private readonly DataContext _context;
+
+        public SolicitanteRepository(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<Solicitante> GetSolicitanteAsync(int id)
+        {
+            try
+            {
+                return await _context.Solicitante.FirstOrDefaultAsync(s => s.Id == id);
+            }
+            catch (Exception ex)
+            {
+                // Log do erro
+                throw new Exception("Erro ao consultar solicitante: " + ex.Message, ex);
+            }
         }
 
-        public Task<Solicitante> InsertAsync(Solicitante entity)
+        public async Task<Solicitante> InsertAsync(Solicitante entity)
         {
-            throw new NotImplementedException();
+            await _context.Solicitante.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }

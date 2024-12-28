@@ -2,9 +2,9 @@
 
 namespace Application.Interfaces
 {
-    public interface ISolicitante
+    public interface ISolicitanteService
     {
-        Task<Solicitante> GetSolicitanteAsync(string cpf, string nome);
+        Task<Solicitante> GetSolicitanteAsync(int Id);
         Task<Solicitante> InsertAsync(Solicitante entity);
     }
 }

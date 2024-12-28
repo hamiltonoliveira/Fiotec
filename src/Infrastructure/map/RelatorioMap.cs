@@ -8,7 +8,7 @@ namespace Infrastructure.Map
     {
         public void Configure(EntityTypeBuilder<Relatorio> builder)
         {
-            builder.ToTable("Relatorios");
+            builder.ToTable("Relatorio");
 
             builder.HasKey(r => r.Id);
 

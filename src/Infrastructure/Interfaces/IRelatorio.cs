@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Interfaces
 {
-    public interface IRelatorio
+    public interface IRelatorioRepository
     {
         Task<Relatorio> InsertRelatorioAsync(Relatorio relatorio);
     }
